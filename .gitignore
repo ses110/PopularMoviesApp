@@ -2,8 +2,8 @@
 .gradle
 TMDB_API_KEY
 /local.properties
-/.idea
-/.idea/libraries
+.idea/
+.idea/libraries
 .DS_Store
 /build
 /captures
