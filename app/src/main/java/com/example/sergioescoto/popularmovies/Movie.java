@@ -38,6 +38,7 @@ public class Movie implements Parcelable {
         backdrop_path = in.readString();
         popularity = in.readInt();
         vote_count = in.readInt();
+        vote_average = in.readDouble();
         video = in.readByte() != 0;
     }
 
@@ -71,6 +72,30 @@ public class Movie implements Parcelable {
 
     public void setPoster_path(String poster_path) {
         this.poster_path = poster_path;
+    }
+
+    public String getOverview() {
+        return overview;
+    }
+
+    public void setOverview(String overview) {
+        this.overview = overview;
+    }
+
+    public String getRelease_date() {
+        return release_date;
+    }
+
+    public void setRelease_date(String release_date) {
+        this.release_date = release_date;
+    }
+
+    public Double getVote_average() {
+        return vote_average;
+    }
+
+    public void setVote_average(Double vote_average) {
+        this.vote_average = vote_average;
     }
 
     @Override
@@ -131,6 +156,7 @@ public class Movie implements Parcelable {
         parcel.writeString(backdrop_path);
         parcel.writeInt(popularity);
         parcel.writeInt(vote_count);
+        parcel.writeDouble(vote_average);
         parcel.writeByte((byte) (video ? 1 : 0));
     }
 }

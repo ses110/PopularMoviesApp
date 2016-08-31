@@ -39,7 +39,9 @@ public class ImageAdapter extends ArrayAdapter<Movie> {
         String fullImagePath = Uri.parse(base_path).buildUpon().appendPath(imageSize).appendPath(currentMovie.getPoster_path()).build().toString();
 
         ImageView currentItemImageView = (ImageView) convertView.findViewById(R.id.list_item_movie_poster_image);
-        Picasso.with(mContext).load(fullImagePath).resize(200, 250).into(currentItemImageView);
+
+
+        Picasso.with(mContext).load(fullImagePath).fit().centerCrop().into(currentItemImageView);
 
         return convertView;
     }

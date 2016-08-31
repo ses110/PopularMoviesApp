@@ -12,7 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -68,7 +67,7 @@ public class MainActivity extends Activity {
 
     }
 
-    private void fetchMovieData(List<Movie> movies) {
+    private void loadMovieData(List<Movie> movies) {
         GridView mMoviePostersGridView = (GridView)findViewById(R.id.moviePostersGridView);
         ImageAdapter moviePostersAdapter = new ImageAdapter(this, movies);
         mMoviePostersGridView.setAdapter(moviePostersAdapter);
@@ -78,30 +77,10 @@ public class MainActivity extends Activity {
             public void onItemClick(AdapterView<?> adapterView, View view, int pos, long id) {
                 Movie currentMovie = (Movie) adapterView.getItemAtPosition(pos);
 
-                Toast.makeText(MainActivity.this, currentMovie.getMovieTitle(), Toast.LENGTH_SHORT).show();
-
                 startActivity(new Intent(MainActivity.this, DetailMovie.class).putExtra(MovieConstants.movieDetail, currentMovie));
             }
         });
-//        Uri imageTMDB = Uri.parse("http://image.tmdb.org/t/p/").buildUpon().appendQuery("w185");
     }
-
-        /*
-        * 1) Fetch list of movies from TMDB
-        *  make it flexible according to sorting type
-        *
-        *  2.) Store results as JSON, then save each entry into a small class
-        *       small class contains:
-        *           reference to image
-        *           URL to image
-        *           other movie info
-        *
-        *   Create ArrayList consisting of these small classes
-        *
-        *   Set GridView with adapter that uses the ArrayList
-        *
-        * */
-
 
     public class FetchMovieDataTask extends AsyncTask<String, Void, List<Movie>> {
 
@@ -157,7 +136,7 @@ public class MainActivity extends Activity {
 
         @Override
         protected void onPostExecute(List<Movie> movies) {
-            fetchMovieData(movies);
+            loadMovieData(movies);
         }
 
         private List<Movie> parseMovieJson(String jsonResponse) {
