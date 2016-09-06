@@ -41,7 +41,7 @@ public class ImageAdapter extends ArrayAdapter<Movie> {
         ImageView currentItemImageView = (ImageView) convertView.findViewById(R.id.list_item_movie_poster_image);
 
 
-        Picasso.with(mContext).load(fullImagePath).fit().centerCrop().into(currentItemImageView);
+        Picasso.with(mContext).load(fullImagePath).fit().into(currentItemImageView);
 
         return convertView;
     }

@@ -1,10 +1,13 @@
 package com.example.sergioescoto.popularmovies;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,16 +27,14 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends Activity {
 
     private static String LOG_TAG = MainActivity.class.getSimpleName();
 
-    final String baseUrl = "https://api.themoviedb.org/3/discover/movie";
-
-    private final String SORT_POPULAR = "popularity.desc";
-    private final String SORT_TOP_RATED = "top.desc";
+    private SharedPreferences sharedPref;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -46,6 +47,26 @@ public class MainActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.menu_sort:
+                AlertDialog.Builder sortOptionsDialog = new AlertDialog.Builder(this);
+                sortOptionsDialog.setTitle(getString(R.string.dialog_sort_movies_title));
+                sortOptionsDialog.setItems(getResources().getStringArray(R.array.sort_movies_options),
+                        new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        SharedPreferences.Editor optionsEditor = sharedPref.edit();
+                        switch(which) {
+                            case 0:
+                                optionsEditor.putString(getString(R.string.movie_url_setting), MovieUtils.getTopMovies());
+                                break;
+                            case 1:
+                                optionsEditor.putString(getString(R.string.movie_url_setting), MovieUtils.getPopularMovies());
+                                break;
+                        }
+                        optionsEditor.commit();
+                        MainActivity.this.fetchMovieData();
+                    }
+                });
+                sortOptionsDialog.show();
 
                 return true;
             default:
@@ -58,16 +79,19 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        String completeApiUrl = Uri.parse(baseUrl).buildUpon()
-                .appendQueryParameter("api_key", BuildConfig.TMDB_API_KEY)
-                .appendQueryParameter("sort_by", SORT_POPULAR)
-                .build().toString();
-
-        new FetchMovieDataTask().execute(completeApiUrl);
-
+        this.fetchMovieData();
     }
 
-    private void loadMovieData(List<Movie> movies) {
+    private void fetchMovieData() {
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+
+        String moviesURL = sharedPref.getString(getString(R.string.movie_url_setting), MovieUtils.getPopularMovies());
+        Log.v(LOG_TAG, "Movies URL = " + moviesURL);
+
+        new FetchMovieDataTask().execute(moviesURL);
+    }
+
+    private void displayMovieData(List<Movie> movies) {
         GridView mMoviePostersGridView = (GridView)findViewById(R.id.moviePostersGridView);
         ImageAdapter moviePostersAdapter = new ImageAdapter(this, movies);
         mMoviePostersGridView.setAdapter(moviePostersAdapter);
@@ -88,6 +112,7 @@ public class MainActivity extends Activity {
 
         @Override
         protected List<Movie> doInBackground(String... strings) {
+            List<Movie> listMovies = new ArrayList<Movie>();
             HttpURLConnection apiConnection = null;
             BufferedReader jsonReader = null;
 
@@ -115,12 +140,13 @@ public class MainActivity extends Activity {
                     return null;
                 }
 
-                List<Movie> listMovies = this.parseMovieJson(buffer.toString());
+                listMovies = this.parseMovieJson(buffer.toString());
 
                 return listMovies;
 
             } catch (IOException e) {
-                return null;
+                Log.e(LOG_TAG, "FetchMovieDataTask :: Device is offline");
+                return listMovies;
             } finally {
                 if(apiConnection != null)
                     apiConnection.disconnect();
@@ -136,7 +162,7 @@ public class MainActivity extends Activity {
 
         @Override
         protected void onPostExecute(List<Movie> movies) {
-            loadMovieData(movies);
+            displayMovieData(movies);
         }
 
         private List<Movie> parseMovieJson(String jsonResponse) {
@@ -148,10 +174,6 @@ public class MainActivity extends Activity {
                     .create();
 
             List<Movie> allMovies = gson.fromJson(jsonResponse, listMovies);
-
-            for(Movie movie : allMovies) {
-                Log.v(LOG_TAG, movie.toString());
-            }
 
             return allMovies;
         }

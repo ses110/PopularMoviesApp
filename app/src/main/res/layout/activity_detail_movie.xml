@@ -43,6 +43,7 @@
 
             <ImageView
                 android:id="@+id/movie_poster"
+                android:scaleType="centerCrop"
                 android:layout_width="100dp"
                 android:layout_height="145dp"
                 android:layout_marginLeft="25dp"

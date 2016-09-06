@@ -36,7 +36,9 @@ public class MovieDeserializer implements JsonDeserializer {
             int[] genre_ids = gson.fromJson(genreIds, int[].class);
             movie.setGenre_ids(genre_ids);
 
-            movie.setPoster_path(movie.getPoster_path().substring(1));
+            if(movie.getPoster_path() != null) {
+                movie.setPoster_path(movie.getPoster_path().substring(1));
+            }
 
             movies.add(movie);
         }

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array
+        name="sort_movies_options">
+        <item>Top Rated</item>
+        <item>Popular</item>
+    </string-array>
+</resources>

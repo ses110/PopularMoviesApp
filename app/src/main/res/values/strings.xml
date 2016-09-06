@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Popular Movies</string>
     <string name="title_activity_main">MainActivity</string>
+
+    <string name="movie_url_setting">USER_MOVIE_URL_SETTING</string>
+
+    <string name="dialog_sort_movies_title">Sort movies by:</string>
 </resources>
